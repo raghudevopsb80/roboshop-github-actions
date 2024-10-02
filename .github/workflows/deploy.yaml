@@ -6,6 +6,7 @@ on:
     inputs:
       appVersion:
         required: true
+        type: string
 jobs:
   DEV:
     runs-on: self-hosted
