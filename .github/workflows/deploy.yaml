@@ -2,7 +2,7 @@ name: Deployment Pipeline
 run-name: "${{ github.event.inputs.appVersion }}"
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       appVersion:
         required: true
