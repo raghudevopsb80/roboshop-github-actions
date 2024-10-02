@@ -7,6 +7,10 @@ on:
       appVersion:
         required: true
         type: string
+      appName:
+        required: true
+        type: string
+
 jobs:
   DEV:
     runs-on: self-hosted
@@ -14,7 +18,7 @@ jobs:
       - run: |
           aws eks update-kubeconfig --name dev-eks
           argocd login argocd-dev.rdevopsb80.online --username admin --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-          argocd app create roboshop-cart --upsert --project default --sync-policy auto --repo https://github.com/raghudevopsb80/roboshop-helm --revision HEAD --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values env-dev/cart.yml --helm-set appVersion=${{ github.event.inputs.appVersion }}
+          argocd app create ${{ github.event.inputs.appName }} --upsert --project default --sync-policy auto --repo https://github.com/raghudevopsb80/roboshop-helm --revision HEAD --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values env-dev/${{ github.event.inputs.appName }}.yml --helm-set appVersion=${{ github.event.inputs.appVersion }}
 
   QA:
     environment: QA
