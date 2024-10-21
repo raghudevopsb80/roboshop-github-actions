@@ -26,6 +26,7 @@ jobs:
       - DEV
     steps:
       - run: |
+          ls -Al
           trivy kubernetes --scanners=misconfig,vuln  --report=all --timeout=1800s  --disable-node-collector --include-namespaces=default  --exit-code 1 --ignore-unfixed   -s CRITICAL,HIGH
 
   QA:
