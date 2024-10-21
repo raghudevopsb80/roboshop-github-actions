@@ -20,11 +20,19 @@ jobs:
           argocd login argocd-dev.rdevopsb80.online --username admin --password $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           argocd app create ${{ github.event.inputs.appName }} --upsert --project default --sync-policy auto --repo https://github.com/raghudevopsb80/roboshop-helm --revision HEAD --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values env-dev/${{ github.event.inputs.appName }}.yml --helm-set appVersion=${{ github.event.inputs.appVersion }}
 
+  SECURITY_CHECKS:
+    runs-on: self-hosted
+    needs:
+      - DEV
+    steps:
+      - run: |
+          trivy kubernetes --scanners=misconfig,vuln  --report=all --timeout=1800s  --disable-node-collector --include-namespaces=default  --exit-code 1 --ignore-unfixed   -s CRITICAL,HIGH
+
   QA:
     environment: QA
     runs-on: self-hosted
     needs:
-      - DEV
+      - SECURITY_CHECKS
     steps:
       - run: echo Hello
 
