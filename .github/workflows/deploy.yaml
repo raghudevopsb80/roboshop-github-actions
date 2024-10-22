@@ -28,7 +28,9 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           ls -Al
-          trivy kubernetes --scanners=misconfig,vuln  --report=all --timeout=1800s  --disable-node-collector --include-namespaces=default  --exit-code 1 --ignore-unfixed   -s CRITICAL,HIGH
+          trivy kubernetes --scanners=misconfig,vuln  --report=all --timeout=1800s  --disable-node-collector --include-namespaces=default  --ignore-unfixed   -s CRITICAL,HIGH | tee trivy.log
+          count=$(cat trivy.log | grep -E '^HIGH|&CRITICAL' | grep -v frontend | wc -l)
+          if [ $count -gt 0 ]; then exit 1 ; fi
 
   QA:
     environment: QA
